@@ -7,11 +7,13 @@ import TestLabel from "./src/componenets/TESTS/TestLabel";
 import store from "./src/store/index.js";
 import Tile from "./src/componenets/game_objects/plane";
 import temporaryMap from "./src/model/Map";
+import { getNewMap } from "./src/communiation";
 
 
 export default function App() {
   (async function () {
    // initCommuniation();
+   getNewMap((x)=>{}, x=>{});
   })();
 
   const Map = temporaryMap

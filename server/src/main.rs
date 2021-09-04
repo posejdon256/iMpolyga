@@ -1,10 +1,32 @@
-use actix_web::{get, post, web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder};
+use actix_web::{get, post, http, web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder};
 use actix::{Actor, StreamHandler};
 use actix_web_actors::ws;
+use actix_cors::Cors;
+use serde::{Serialize};
+
+#[derive(Serialize)]
+struct Tile {
+    color: String,
+}
+#[derive(Serialize)]
+struct Map {
+    id: usize,
+    size: usize,
+    tiles: Vec<Vec<Tile>>,
+}
 
 #[get("/")]
 async fn hello() -> impl Responder {
     HttpResponse::Ok().body("Hello world!")
+}
+
+#[get("/map")]
+async fn getMap() -> actix_web::Result<web::Json<Map>> {
+    let mut map = Map{id: 12, size: 0, tiles: vec![
+        vec![Tile{color: "white".to_owned()}, Tile{color: "black".to_owned()}],
+        vec![Tile{color: "red".to_owned()}, Tile{color: "blue".to_owned()}],
+    ]};
+    Ok(web::Json(map))
 }
 
 #[post("/echo")]
@@ -43,10 +65,21 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     HttpServer::new(|| {
+        let cors = Cors::default()
+              .allowed_origin("http://localhost")
+              .allowed_origin_fn(|origin, _req_head| {
+                  true
+              })
+              .allowed_methods(vec!["GET", "POST"])
+              .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+              .allowed_header(http::header::CONTENT_TYPE)
+              .max_age(3600);
         App::new()
+            .wrap(cors)
             .route("/ws/", web::get().to(index))
             .service(hello)
             .service(echo)
+            .service(getMap)
     })
     .bind("127.0.0.1:8080")?
     .run()

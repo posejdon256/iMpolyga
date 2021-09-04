@@ -1,5 +1,7 @@
 import { testAction } from "../actions/test-action.js"
 import store from "../store/index.js"
+import axios from 'axios'
+
 
 var socket;
 
@@ -25,4 +27,15 @@ export const pingServer = () => {
 export const updateSomeData = (stringData) => {
     //This will update test label
     store.dispatch(testAction(stringData))
+}
+
+export const getNewMap = (onSuccess, onError) => {
+    axios.get('http://localhost:8080/map').then(x=> {
+      //console.log ("heheszki");
+      //console.log(x); 
+      onSuccess(x.data);
+    }).catch(x=> {
+      console.log("not heheszki");
+      onError(x);
+    })
 }
