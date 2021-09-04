@@ -8,29 +8,29 @@ import store from "./src/store/index.js";
 import Tile from "./src/componenets/game_objects/plane";
 import temporaryMap from "./src/model/Map";
 import { getNewMap } from "./src/communiation";
-
+import { setMap } from "./src/actions/map";
+import World from "./src/componenets/game_objects/world";
 
 export default function App() {
   (async function () {
-   // initCommuniation();
-   getNewMap((x)=>{}, x=>{});
+    // initCommuniation();
+    getNewMap(
+      (map) => {
+        store.dispatch(setMap(map));
+      },
+      (error) => {
+        console.log("Lubie placki i mam erorra" + error);
+      }
+    );
   })();
 
-  const Map = temporaryMap
+  const Map = temporaryMap;
   return (
     <Provider store={store}>
       <View style={styles.container}>
         <TestLabel props={`Lubie placki`} />
         <TestButton />
-        <Canvas>
-          <ambientLight />
-          <pointLight position={[10, 10, 10]} />
-          {Map.tiles.map((mapRow, i) => {
-            return mapRow.map((mapColumn, j) => 
-              <Tile position={[i, j, 0]} color={mapColumn.color} size={1} key={`tile_${i}_${j}`} />
-            )
-          })}
-        </Canvas>
+        <World />
       </View>
     </Provider>
   );

@@ -1,19 +1,16 @@
 import React, { useRef, useState } from "react";
 import { useFrame } from "react-three-fiber";
 
-
-const Tile = ({size, position, color}) => {
-
+const Tile = ({ size, position, color }) => {
   const mesh = useRef();
 
   // Set up state for the hovered and active state
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
   const activating = (e, state) => {
-    setHover(state)
-  }
-  useFrame(() => {
-  });
+    setHover(state);
+  };
+  useFrame(() => {});
 
   return (
     <mesh
@@ -24,13 +21,12 @@ const Tile = ({size, position, color}) => {
       onPointerOver={(e) => setHover(true)}
       onPointerOut={(e) => setHover(false)}
     >
-    return <planeGeometry attach="geometry" args={[size, size, 1, 1]} />
+      <planeGeometry attach="geometry" args={[size, size, 1, 1]} />
       <meshStandardMaterial
         attach="material"
         color={hovered ? "hotpink" : color}
       />
     </mesh>
   );
-
-}
-export default Tile
+};
+export default Tile;
