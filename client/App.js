@@ -1,24 +1,34 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Provider } from 'react-redux';
-import { initCommuniation } from './src/communiation';
-import TestButton from './src/componenets/TESTS/TestButton';
-import TestLabel from './src/componenets/TESTS/TestLabel';
-import store from './src/store/index.js';
-
+import React, { useRef, useState } from "react";
+import { StyleSheet, View } from "react-native";
+import { Canvas, useFrame } from "react-three-fiber";
+import { Provider } from "react-redux";
+import TestButton from "./src/componenets/TESTS/TestButton";
+import TestLabel from "./src/componenets/TESTS/TestLabel";
+import store from "./src/store/index.js";
+import Tile from "./src/componenets/game_objects/plane";
+import temporaryMap from "./src/model/Map";
 
 
 export default function App() {
   (async function () {
-    initCommuniation();
+   // initCommuniation();
   })();
+
+  const Map = temporaryMap
   return (
     <Provider store={store}>
       <View style={styles.container}>
         <TestLabel props={`Lubie placki`} />
         <TestButton />
-        <StatusBar style="auto" />
+        <Canvas>
+          <ambientLight />
+          <pointLight position={[10, 10, 10]} />
+          {Map.tiles.map((mapRow, i) => {
+            return mapRow.map((mapColumn, j) => 
+              <Tile position={[i, j, 0]} color={mapColumn.color} size={1} key={`tile_${i}_${j}`} />
+            )
+          })}
+        </Canvas>
       </View>
     </Provider>
   );
@@ -27,8 +37,6 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "aquamarine",
   },
 });
