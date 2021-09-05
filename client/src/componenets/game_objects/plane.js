@@ -1,7 +1,7 @@
 import React, { useRef, useState } from "react";
 import { useFrame } from "react-three-fiber";
 
-const Tile = ({ size, position, color }) => {
+const Tile = ({ size, position, color, rotation }) => {
   const mesh = useRef();
 
   // Set up state for the hovered and active state
@@ -16,6 +16,7 @@ const Tile = ({ size, position, color }) => {
     <mesh
       position={position}
       ref={mesh}
+      rotation={rotation}
       scale={[1, 1, 1]}
       onClick={(e) => activating(e, !active)}
       onPointerOver={(e) => setHover(true)}

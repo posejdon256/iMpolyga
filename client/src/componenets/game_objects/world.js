@@ -1,19 +1,32 @@
 import { connect } from "react-redux";
-import React from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { Canvas } from "react-three-fiber";
 import Tile from "./plane";
+import Background from "../scene/background";
 
 const World = ({ Map }) => {
+  const [zPoz, setZPoz] = useState(1);
+  setTimeout(() => {
+    setZPoz(zPoz + 1);
+  }, 1000);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setZPoz(zPoz + 10);
+      console.log(zPoz);
+    }, 1000);
+  }, [zPoz, setZPoz]);
   return (
-    <Canvas>
+    <Canvas orthographic camera={{ zoom: 100, position: [2, 2, 3] }}>
       <ambientLight />
       <pointLight position={[10, 10, 10]} />
       {Map.tiles.map((mapRow, i) => {
         return mapRow.map((mapColumn, j) => (
           <Tile
-            position={[i, j, 0]}
+            position={[i, 0, j]}
             color={mapColumn.color}
             size={1}
+            rotation={[-Math.PI / 2, 0, 0]}
             key={`tile_${i}_${j}`}
           />
         ));

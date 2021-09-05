@@ -23,13 +23,11 @@ export default function App() {
       }
     );
   })();
-
-  const Map = temporaryMap;
   return (
     <Provider store={store}>
       <View style={styles.container}>
-        <TestLabel props={`Lubie placki`} />
-        <TestButton />
+        {/* <TestLabel props={`Lubie placki`} />
+        <TestButton /> */}
         <World />
       </View>
     </Provider>
