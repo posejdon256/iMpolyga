@@ -1,35 +1,28 @@
-import React, { useRef, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import { Canvas, useFrame } from "react-three-fiber";
+import React, { useState } from "react";
+import { Button, StyleSheet, View } from "react-native";
 import { Provider } from "react-redux";
-import TestButton from "./src/componenets/TESTS/TestButton";
-import TestLabel from "./src/componenets/TESTS/TestLabel";
-import store from "./src/store/index.js";
-import Tile from "./src/componenets/game_objects/plane";
-import temporaryMap from "./src/model/Map";
-import { getNewMap } from "./src/communiation";
-import { setMap } from "./src/actions/map";
+import { initialize } from "./src/communiation/initialize";
 import World from "./src/componenets/game_objects/world";
+import { initializeMusic, Music } from "./src/extras/music";
+import store from "./src/store/index.js";
 
 export default function App() {
-  (async function () {
-    // initCommuniation();
-    getNewMap(
-      (map) => {
-        store.dispatch(setMap(map));
-      },
-      (error) => {
-        console.log("Lubie placki i mam erorra" + error);
-      }
-    );
-  })();
+  const [gameStarted, setGameStarted] = useState(false);
+
+  initialize();
+  // initializeMusic();
   return (
     <Provider store={store}>
-      <View style={styles.container}>
-        {/* <TestLabel props={`Lubie placki`} />
-        <TestButton /> */}
-        <World />
-      </View>
+      {!gameStarted ? (
+        <View style={styles.menu}>
+          <Music style={styles.music} />
+          <Button onPress={(e) => setGameStarted(true)} title={`START`} />
+        </View>
+      ) : (
+        <View style={styles.container}>
+          <World />
+        </View>
+      )}
     </Provider>
   );
 }
@@ -38,5 +31,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "aquamarine",
+  },
+  menu: {
+    flat: 1,
+    backgroundColor: "red",
+    justifyContent: "center",
+    alignItems: "center",
+    height: "100%",
+  },
+  music: {
+    opacity: 0,
   },
 });

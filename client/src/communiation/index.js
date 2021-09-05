@@ -2,7 +2,7 @@ import { testAction } from "../actions/test-action.js";
 import store from "../store/index.js";
 import axios from "axios";
 
-var socket;
+let socket;
 
 export const initCommuniation = async () => {
   console.log("Lubie placuszki podawane przez websocket");
@@ -19,16 +19,19 @@ export const initCommuniation = async () => {
   });
   //tutaj robie co chcę.
 };
-export const pingServer = () => {
+export const tileClick_to_server = (x, y) => {
+  socket.send(`Hey, you server, tile [${x}, ${y}] was clicked`);
+};
+export const ping_to_server = () => {
   //Here you can perform action which will ping server
   socket.send(" trutututu");
 };
-export const updateSomeData = (stringData) => {
+export const updateSomeData_from_server = (stringData) => {
   //This will update  test label
   store.dispatch(testAction(stringData));
 };
 
-export const getNewMap = (onSuccess, onError) => {
+export const getNewMap_to_server = (onSuccess, onError) => {
   axios
     .get("http://localhost:8080/map")
     .then((x) => {

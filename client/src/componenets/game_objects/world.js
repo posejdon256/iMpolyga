@@ -6,16 +6,7 @@ import Background from "../scene/background";
 
 const World = ({ Map }) => {
   const [zPoz, setZPoz] = useState(1);
-  setTimeout(() => {
-    setZPoz(zPoz + 1);
-  }, 1000);
 
-  useEffect(() => {
-    setTimeout(() => {
-      setZPoz(zPoz + 10);
-      console.log(zPoz);
-    }, 1000);
-  }, [zPoz, setZPoz]);
   return (
     <Canvas orthographic camera={{ zoom: 100, position: [2, 2, 3] }}>
       <ambientLight />

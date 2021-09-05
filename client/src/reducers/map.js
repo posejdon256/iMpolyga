@@ -1,4 +1,3 @@
-import { getNewMap, pingServer } from "../communiation";
 import temporaryMap from "../model/Map";
 
 const mapObject = (state, action) => {
