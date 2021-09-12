@@ -5,8 +5,8 @@ export default class Ocean extends Tile {
     //state can be 0 - water, 1 - ice
     super(type, x, y, state, "blue");
   }
-  changeWaterToIce() {
-    // this.state = state;
+  changeWaterToIce(state) {
+    this._state = state;
     // upgrade state
   }
 }

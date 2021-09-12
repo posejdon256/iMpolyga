@@ -4,35 +4,13 @@ use actix_web_actors::ws;
 use actix_cors::Cors;
 use serde::{Serialize};
 
-#[derive(Serialize)]
-struct Tile {
-    color: String,
-}
-#[derive(Serialize)]
-struct Map {
-    id: usize,
-    size: usize,
-    tiles: Vec<Vec<Tile>>,
-}
+mod communication;
+mod model;
 
-#[get("/")]
-async fn hello() -> impl Responder {
-    HttpResponse::Ok().body("Hello world!")
-}
+use communication::endpoints;
+use communication::websocket;
 
-#[get("/map")]
-async fn getMap() -> actix_web::Result<web::Json<Map>> {
-    let mut map = Map{id: 12, size: 0, tiles: vec![
-        vec![Tile{color: "green".to_owned()}, Tile{color: "black".to_owned()}],
-        vec![Tile{color: "red".to_owned()}, Tile{color: "blue".to_owned()}],
-    ]};
-    Ok(web::Json(map))
-}
 
-#[post("/echo")]
-async fn echo(req_body: String) -> impl Responder {
-    HttpResponse::Ok().body(req_body)
-}
 
 struct WsActor;
 
@@ -77,9 +55,9 @@ async fn main() -> std::io::Result<()> {
         App::new()
             .wrap(cors)
             .route("/ws/", web::get().to(index))
-            .service(hello)
-            .service(echo)
-            .service(getMap)
+            .service(endpoints::hello)
+            .service(endpoints::echo)
+            .service(endpoints::getMap)
     })
     .bind("127.0.0.1:8080")?
     .run()
