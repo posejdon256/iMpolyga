@@ -4,12 +4,15 @@ import axios from "axios";
 
 let socket;
 
-export const initCommuniation = async () => {
+export const initCommuniation = () => {
   console.log("Lubie placuszki podawane przez websocket");
   socket = new WebSocket("ws://localhost:8080/ws/");
   // Connection opened
   socket.addEventListener("open", function (event) {
     socket.send("Hello Server!");
+  });
+  socket.addEventListener("error", function (event) {
+    console.log("error in websocket:", event);
   });
 
   // Listen for messages

@@ -10,6 +10,7 @@ export default function App() {
   const [gameStarted, setGameStarted] = useState(false);
 
   initialize();
+  console.log("trusurusu")
   // initializeMusic();
   return (
     <Provider store={store}>

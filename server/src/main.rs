@@ -1,40 +1,28 @@
-use actix_web::{get, post, http, web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder};
-use actix::{Actor, StreamHandler};
-use actix_web_actors::ws;
 use actix_cors::Cors;
-use serde::{Serialize};
+use actix_web::{
+    get, http, post, web, App, Error, HttpRequest, HttpResponse, HttpServer, Responder,
+};
+use actix_web_actors::ws;
+use serde::Serialize;
 
+mod actor;
 mod communication;
+mod context;
 mod model;
 
+use actor::WsActor;
 use communication::endpoints;
 use communication::websocket;
+use context::{ContextAddr, ServerContext};
 
-
-
-struct WsActor;
-
-impl Actor for WsActor {
-    type Context = ws::WebsocketContext<Self>;
-}
-
-/// Handler for ws::Message message
-impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsActor {
-    fn handle(
-        &mut self,
-        msg: Result<ws::Message, ws::ProtocolError>,
-        ctx: &mut Self::Context,
-    ) {
-        match msg {
-            Ok(ws::Message::Ping(msg)) => ctx.pong(&msg),
-            Ok(ws::Message::Text(text)) => ctx.text(text),
-            Ok(ws::Message::Binary(bin)) => ctx.binary(bin),
-            _ => (),
-        }
-    }
-}
-
-async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, Error> {
+async fn index(
+    server_context: web::Data<ContextAddr>,
+    req: HttpRequest,
+    stream: web::Payload,
+) -> Result<HttpResponse, Error> {
+    println!("lolz");
+    let ctx: &ContextAddr = server_context.get_ref();
+    //println!("{}", ctx.id);
     let resp = ws::start(WsActor {}, &req, stream);
     println!("{:?}", resp);
     resp
@@ -42,22 +30,23 @@ async fn index(req: HttpRequest, stream: web::Payload) -> Result<HttpResponse, E
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    HttpServer::new(|| {
+    let ctx = ServerContext::new();
+    HttpServer::new(move || {
         let cors = Cors::default()
-              .allowed_origin("http://localhost")
-              .allowed_origin_fn(|origin, _req_head| {
-                  true
-              })
-              .allowed_methods(vec!["GET", "POST"])
-              .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-              .allowed_header(http::header::CONTENT_TYPE)
-              .max_age(3600);
+            .allowed_origin("http://localhost")
+            .allowed_origin("ws://localhost")
+            .allowed_origin_fn(|_origin, _req_head| true)
+            .allowed_methods(vec!["GET", "POST"])
+            .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+            .allowed_header(http::header::CONTENT_TYPE)
+            .max_age(3600);
         App::new()
+            .data(ctx.clone())
             .wrap(cors)
             .route("/ws/", web::get().to(index))
             .service(endpoints::hello)
             .service(endpoints::echo)
-            .service(endpoints::getMap)
+            .service(endpoints::get_map)
     })
     .bind("127.0.0.1:8080")?
     .run()

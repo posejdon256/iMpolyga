@@ -5,7 +5,7 @@ const mapObject = (state, action) => {
     case "SET_MAP":
       return { ...action.payload.map };
     default:
-      return temporaryMap;
+      return { ...state };
   }
 };
 export default mapObject;
