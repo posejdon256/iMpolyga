@@ -1,4 +1,4 @@
-use crate::model::map::{Map, Tile};
+use crate::model::map::{Map, Tile, TileType};
 use actix_web::{get, post, web, HttpRequest, HttpResponse, Responder};
 
 #[get("/")]
@@ -14,18 +14,18 @@ pub async fn get_map() -> actix_web::Result<web::Json<Map>> {
         tiles: vec![
             vec![
                 Tile {
-                    color: "green".to_owned(),
+                    id: TileType::Mountain,
                 },
                 Tile {
-                    color: "black".to_owned(),
+                    id: TileType::Grass,
                 },
             ],
             vec![
                 Tile {
-                    color: "red".to_owned(),
+                    id: TileType::Ocean,
                 },
                 Tile {
-                    color: "blue".to_owned(),
+                    id: TileType::Mountain,
                 },
             ],
         ],
