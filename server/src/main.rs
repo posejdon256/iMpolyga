@@ -10,75 +10,17 @@ mod communication;
 //mod context;
 mod model;
 
-use model::map::*;
-// use actor::WsActor;
-// use communication::endpoints;
 use communication::websocket::ws_entry;
-// use context::{ContextAddr, ServerContext};
+use model::map::*;
 
-// async fn index(
-//     server_context: web::Data<ContextAddr>,
-//     req: HttpRequest,
-//     stream: web::Payload,
-// ) -> Result<HttpResponse, Error> {
-//     println!("lolz");
-//     let ctx: &ContextAddr = server_context.get_ref();
-//     //println!("{}", ctx.id);
-//     let resp = ws::start(WsActor {}, &req, stream);
-//     println!("{:?}", resp);
-//     resp
-// }
-
-// #[actix_web::main]
-// async fn main() -> std::io::Result<()> {
-//     let ctx = ServerContext::new();
-//     HttpServer::new(move || {
-//         let cors = Cors::default()
-//             .allowed_origin("http://localhost")
-//             .allowed_origin("ws://localhost")
-//             .allowed_origin_fn(|_origin, _req_head| true)
-//             .allowed_methods(vec!["GET", "POST"])
-//             .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-//             .allowed_header(http::header::CONTENT_TYPE)
-//             .max_age(3600);
-//         App::new()
-//             .data(ctx.clone())
-//             .wrap(cors)
-//             .route("/ws/", web::get().to(index))
-//             .service(endpoints::hello)
-//             .service(endpoints::echo)
-//             .service(endpoints::get_map)
-//     })
-//     .bind("127.0.0.1:8080")?
-//     .run()
-//     .await
-// }
-
-// #![deny(warnings)]
-use std::collections::HashMap;
-use std::sync::{
-    atomic::{AtomicUsize, Ordering},
-    Arc,
-};
-
-use futures_util::{SinkExt, StreamExt, TryFutureExt};
-use tokio::sync::{mpsc, RwLock};
-use tokio_stream::wrappers::UnboundedReceiverStream;
-use warp::ws::{Message, WebSocket};
 use warp::Filter;
-
-/// Our state of currently connected users.
-///
-/// - Key is their id
-/// - Value is a sender of `warp::ws::Message`
-type Users = Arc<RwLock<HashMap<usize, mpsc::UnboundedSender<Message>>>>;
 
 #[tokio::main]
 async fn main() {
     pretty_env_logger::init();
 
     // GET /chat -> websocket upgrade
-    let chat = ws_entry();
+    let connector = ws_entry("ws");
     let get_map = warp::path("map").map(|| {
         let map = Map {
             id: 12,
@@ -109,7 +51,7 @@ async fn main() {
     // GET / -> index html
     let index = warp::path::end().map(|| warp::reply::html(INDEX_HTML));
 
-    let routes = index.or(get_map).or(chat).with(cors);
+    let routes = index.or(get_map).or(connector).with(cors);
 
     warp::serve(routes).run(([127, 0, 0, 1], 8080)).await;
 }
