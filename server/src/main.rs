@@ -8,7 +8,10 @@
 //mod actor;
 mod communication;
 //mod context;
+mod client_node;
+mod connection_coordinator;
 mod model;
+mod user_connection;
 
 use communication::websocket::ws_entry;
 use model::map::*;
